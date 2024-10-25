@@ -4,13 +4,18 @@ declare(strict_types=1);
 namespace Triplewood\Toolbox\Console\Command;
 
 use Magento\Framework\App\State;
+use Magento\Framework\Exception\LocalizedException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Triplewood\Toolbox\Model\ProfilerService;
 
-class ProfilerEnableCommand extends Command
+class ProfilerDisableCommand extends Command
 {
+    /**
+     * @param ProfilerService $profilerService
+     * @param State $appState
+     */
     public function __construct(
         private readonly ProfilerService $profilerService,
         private readonly State $appState
@@ -18,10 +23,13 @@ class ProfilerEnableCommand extends Command
         parent::__construct();
     }
 
+    /**
+     * @return void
+     */
     protected function configure(): void
     {
-        $this->setName('triplewood:profiler:enable');
-        $this->setDescription('This enables the extended profiling capabilities of the Triplewood profiler.');
+        $this->setName('triplewood:profiler:disable');
+        $this->setDescription('This disabled the extended profiling capabilities of the Triplewood profiler.');
         parent::configure();
     }
 
@@ -37,32 +45,27 @@ class ProfilerEnableCommand extends Command
     {
         $exitCode = 0;
 
-        $output->writeln('<info>Enabling Triplewood profiler.</info>');
-
-        $output->writeln('<comment>' .
-            '| NOTE: Enabling the Triplewood profiler changes some files in the core that cannot be changed ' . PHP_EOL .
-            '| through other means like overrides or plugins. Those changes can be reverted by using triplewood:profile:disable. ' . PHP_EOL .
-            '| It is possible that they can be accidentally reverted by composer, too. Be careful! </comment>');
+        $output->writeln('<info>Disabling Triplewood profiler.</info>');
 
         if ($this->appState->getMode() === State::MODE_PRODUCTION) {
             $output->writeln(
                 '<comment>' .
                 'Your shop runs in PRODUCTION mode. This means you have to run "bin/magento static:content:deploy" ' .
-                'to enable extended profiling in all classes.' .
+                'to disable extended profiling in all classes.' .
                 '</comment>'
             );
         } else {
             $this->profilerService->clearGeneratedCode();
             $output->writeln(
                 '<comment>' .
-                'Your shop runs in DEVELOPER or DEFAULT mode. We automatically reset generated code to enable extended ' .
+                'Your shop runs in DEVELOPER or DEFAULT mode. We automatically reset generated code to disable extended ' .
                 'profiling in all classes.' .
                 '</comment>'
             );
         }
 
-        $this->profilerService->enable();
-        $output->writeln('<info>Enabled Triplewood profiler.</info>');
+        $this->profilerService->disable();
+        $output->writeln('<info>Disabled Triplewood profiler.</info>');
 
         return $exitCode;
     }
