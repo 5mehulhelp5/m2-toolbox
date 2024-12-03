@@ -13,13 +13,13 @@ use Magento\Framework\Filesystem\Io\File;
  */
 class ProfilerService
 {
-    private const BEFORE_PLUGIN_CALL = '$beforeResult = $pluginInstance->$pluginMethod($this, ...array_values($arguments));';
-    private const AROUND_PLUGIN_CALL = '$result = $pluginInstance->$pluginMethod($subject, $next, ...array_values($arguments));';
-    private const AFTER_PLUGIN_CALL = '$result = $pluginInstance->$pluginMethod($subject, $result, ...array_values($arguments));';
+    private const string BEFORE_PLUGIN_CALL = '$beforeResult = $pluginInstance->$pluginMethod($this, ...array_values($arguments));';
+    private const string AROUND_PLUGIN_CALL = '$result = $pluginInstance->$pluginMethod($subject, $next, ...array_values($arguments));';
+    private const string AFTER_PLUGIN_CALL = '$result = $pluginInstance->$pluginMethod($subject, $result, ...array_values($arguments));';
 
-    private const TRIPLEWOOD_PROFILER_MARKER = '/** TW-PROFILER_MARKER **/';
-    private const PROFILER_START_TEMPLATE = self::TRIPLEWOOD_PROFILER_MARKER . ' \Magento\Framework\Profiler::start(\'EP_\' . self::class . $pluginMethod);';
-    private const PROFILER_END_TEMPLATE = '\Magento\Framework\Profiler::stop(\'EP_\' . self::class . $pluginMethod);';
+    private const string TRIPLEWOOD_PROFILER_MARKER = '/** TW-PROFILER_MARKER **/';
+    private const string PROFILER_START_TEMPLATE = self::TRIPLEWOOD_PROFILER_MARKER . ' \Magento\Framework\Profiler::start(\'EP_\' . self::class . $pluginMethod);';
+    private const string PROFILER_END_TEMPLATE = '\Magento\Framework\Profiler::stop(\'EP_\' . self::class . $pluginMethod);';
 
     public function __construct(
         private readonly File $fileWriter,

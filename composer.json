@@ -5,9 +5,8 @@
     "version": "0.0.1",
     "description": "A Magento 2 extension for debugging",
     "require": {
-        "php": "~8.1",
-        "magento/framework": "*",
-
+        "php": "~8.3",
+        "magento/framework": "*"
     },
     "require-dev":{
         "phpunit/phpunit":"*",
