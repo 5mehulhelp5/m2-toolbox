@@ -5,6 +5,7 @@
             <argument name="commands" xsi:type="array">
                 <item name="triplewood_profiler_enable" xsi:type="object">Triplewood\Toolbox\Console\Command\ProfilerEnableCommand</item>
                 <item name="triplewood_profiler_disable" xsi:type="object">Triplewood\Toolbox\Console\Command\ProfilerDisableCommand</item>
+                <item name="triplewood_profiler_mode_set" xsi:type="object">Triplewood\Toolbox\Console\Command\ProfilerModeSetCommand</item>
             </argument>
         </arguments>
     </type>

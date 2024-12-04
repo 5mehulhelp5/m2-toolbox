@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Triplewood\Toolbox\Console\Command;
 
 use Magento\Framework\App\State;
-use Magento\Framework\Exception\LocalizedException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

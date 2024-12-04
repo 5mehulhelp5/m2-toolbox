@@ -62,7 +62,8 @@ class ProfilerEnableCommand extends Command
         }
 
         $this->profilerService->enable();
-        $output->writeln('<info>Enabled Triplewood profiler.</info>');
+        $output->writeln('<info>Enabled Triplewood profiler. Please note, that the ' .
+            'Triplewood Extended Profiler only works in csvfile-mode. Other modes are not supported.</info>');
 
         return $exitCode;
     }

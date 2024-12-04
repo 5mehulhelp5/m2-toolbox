@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Triplewood\Toolbox\Model;
@@ -13,13 +14,18 @@ use Magento\Framework\Filesystem\Io\File;
  */
 class ProfilerService
 {
+    public const string MODE_SINGLE = 'single';
+    public const string MODE_ACCUMULATE= 'accumulate';
+
     private const string BEFORE_PLUGIN_CALL = '$beforeResult = $pluginInstance->$pluginMethod($this, ...array_values($arguments));';
     private const string AROUND_PLUGIN_CALL = '$result = $pluginInstance->$pluginMethod($subject, $next, ...array_values($arguments));';
     private const string AFTER_PLUGIN_CALL = '$result = $pluginInstance->$pluginMethod($subject, $result, ...array_values($arguments));';
 
     private const string TRIPLEWOOD_PROFILER_MARKER = '/** TW-PROFILER_MARKER **/';
-    private const string PROFILER_START_TEMPLATE = self::TRIPLEWOOD_PROFILER_MARKER . ' \Magento\Framework\Profiler::start(\'EP_\' . self::class . $pluginMethod);';
+    private const string PROFILER_START_TEMPLATE = self::TRIPLEWOOD_PROFILER_MARKER.' \Magento\Framework\Profiler::start(\'EP_\' . self::class . $pluginMethod);';
     private const string PROFILER_END_TEMPLATE = '\Magento\Framework\Profiler::stop(\'EP_\' . self::class . $pluginMethod);';
+
+    private const string PROFILER_MODE_FILE = 'var/profiler-mode.flag';
 
     public function __construct(
         private readonly File $fileWriter,
@@ -42,7 +48,7 @@ class ProfilerService
     {
         if (!Profiler::isEnabled()) {
             // enable the Magento profiler
-            $this->fileWriter->write(BP . '/' . ProfilerEnableCommand::PROFILER_FLAG_FILE, 'csvfile');
+            $this->fileWriter->write(BP.'/'.ProfilerEnableCommand::PROFILER_FLAG_FILE, 'csvfile');
             Profiler::enable();
         }
         $this->enableExtendedProfiler();
@@ -53,8 +59,8 @@ class ProfilerService
      */
     public function disable(): void
     {
-       if (Profiler::isEnabled()) {
-            $this->fileWriter->rm(BP . '/' . ProfilerEnableCommand::PROFILER_FLAG_FILE);
+        if (Profiler::isEnabled()) {
+            $this->fileWriter->rm(BP.'/'.ProfilerEnableCommand::PROFILER_FLAG_FILE);
             Profiler::disable();
         }
         $this->disableExtendedProfiler();
@@ -69,6 +75,21 @@ class ProfilerService
         $traitDefinition = file_get_contents($traitFile);
 
         return (str_contains($traitDefinition, self::TRIPLEWOOD_PROFILER_MARKER));
+    }
+
+    public function setMode(string $mode): bool
+    {
+        $result = $this->fileWriter->write(BP.'/'.self::PROFILER_MODE_FILE, $mode);
+        return !($result === false);
+    }
+
+    public function getMode(): string
+    {
+        $result = $this->fileWriter->read(BP.'/'.self::PROFILER_MODE_FILE);
+        if (empty($result)) {
+            return self::MODE_SINGLE;
+        }
+        return $result;
     }
 
     /**
@@ -118,7 +139,7 @@ class ProfilerService
     {
         return str_replace(
             $pluginCall,
-            self::PROFILER_START_TEMPLATE . $pluginCall. self::PROFILER_END_TEMPLATE,
+            self::PROFILER_START_TEMPLATE.$pluginCall.self::PROFILER_END_TEMPLATE,
             $traitDefinition
         );
     }
@@ -131,7 +152,7 @@ class ProfilerService
     private function unwrapPluginCall(string $pluginCall, string $traitDefinition): string
     {
         return str_replace(
-            self::PROFILER_START_TEMPLATE . $pluginCall. self::PROFILER_END_TEMPLATE,
+            self::PROFILER_START_TEMPLATE.$pluginCall.self::PROFILER_END_TEMPLATE,
             $pluginCall,
             $traitDefinition
         );
