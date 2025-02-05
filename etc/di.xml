@@ -9,4 +9,7 @@
             </argument>
         </arguments>
     </type>
+    <type name="Magento\Framework\AppInterface">
+        <plugin name="triplewood_extended_profiler" type="Triplewood\Toolbox\Plugin\AppPlugin" sortOrder="1" disabled="false" />
+    </type>
 </config>
